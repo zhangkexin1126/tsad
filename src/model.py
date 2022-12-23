@@ -64,38 +64,31 @@ class ContrastiveLearningTSAD(nn.Module):
         z = self.ts_embed(x_raw) # embedding
         encoder_out = self.encoder_block(z) # tcn_out [out1, out2, out3, ...], by num_layers
 
-        """Global multi-granular Rescontruct view"""
-        # h = encoder_out[-1]
-        # rec = self.reconstruct_decoder(h)
-        # print("LEN Decoders", len(self.decoders), len(encoder_out))
+        """Rescontruct data in each TCN layer"""
         REC_list = []
         for k in range(len(self.decoders)):
             h = encoder_out[k]
             rec = self.decoders[k](h)
             REC_list.append(rec)
 
-        # addrec = self.add_decoder(encoder_out[k])
-        # print("===", addrec.shape)
-        #
-        # hh
-
-        """Local Contrastive view - different granular"""
-        Z_list = []
-        P_list = []
-        Q_list = []
+        """Contrastive module in each TCN layer"""
+        Z_list = [] # output representation of each TCN layer, []
+        P_list = [] # project each representation to a new space, []
         for k in range(len(encoder_out) - 1): # drop last layer
             z = encoder_out[k] # out of each TCN layer
-            # pred
             z_pred = self.predictor_block(z) #proj
-            # pool
-            # z_pool = self.pools[k](z)
 
             Z_list.append(z)
             P_list.append(z_pred)
-            # Q_list.append(z_pool)
+
+        return x, z, encoder_out, REC_list, Z_list, P_list
 
 
-
+    def trash(self):
+        pass
+        ## if use RNN decoder
+        # h_hidden = torch.mean(h, dim=1).unsqueeze(dim=0)
+        # rec = self.reconstruct_decoder(h, h_hidden)
 
         """Local Cross Predictive view - skip-step learning, CPC"""
         # z1_hist = encoder_out[0][:, 0:self.args.xp_size,:]
@@ -113,22 +106,9 @@ class ContrastiveLearningTSAD(nn.Module):
         # target2 = encoder_out[-1][:, -1,:]
         # # print("target1/target2", target1.shape, target2.shape)
 
-
         """Variable-level, kur"""
         # B,L,C -> B,C,L
         # x_var = x_raw.permute(0, 2, 1)
-
-        return x, z, encoder_out, REC_list, Z_list, P_list
-        # pred1, target1.detach(), pred2, target2.detach()
-
-        # return x, z, h, rec, xn_pred, xn_target
-
-    def trash(self):
-        pass
-        ## if use RNN decoder
-        # h_hidden = torch.mean(h, dim=1).unsqueeze(dim=0)
-        # rec = self.reconstruct_decoder(h, h_hidden)
-
 
 if __name__ == "__main__":
     pass

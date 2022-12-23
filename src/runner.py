@@ -92,16 +92,6 @@ class Runner(BaseRunner):
             opt_num = np.squeeze(np.argmax(fscore))
             opt_thres = thres[opt_num]
             pred_labels = np.where(score_t_test > opt_thres, 1, 0)
-            # # Output Pre-Rec-Curve
-            # disp = PrecisionRecallDisplay(precision=prec, recall=rec)
-            # disp.plot()
-            # plt.savefig("save/metrics/precision-recall-curve-{}.png".format(self.args.dataname))
-            # # Output ROC-Curve
-            # fpr, tpr, roc_thres = roc_curve(y_ture, scores, pos_label=1)
-            # roc_display = RocCurveDisplay(fpr=fpr, tpr=tpr)
-            # roc_display.plot()
-            # plt.savefig("save/metrics/roc-curve-{}.png".format(self.args.dataname))
-            # pred_labels = np.where(scores > opt_thres, 1, 0)
         elif thretype == "top_k_time":
             test_anom_frac = 0.1
             opt_thres = np.nanpercentile(score_t_test, 100 * (1 - test_anom_frac), interpolation='higher')
@@ -125,12 +115,19 @@ class Runner(BaseRunner):
 
                 out = self.model(x)
                 x_raw, z, encoder_out, REC_list, Z_list, P_list = out[0], out[1], out[2], out[3], out[4], out[5]
-
+                """
+                x_raw: raw time series data, shape of Batchsize * Length * x_dim
+                z: representation of embedding layer, shape of Batchsize * Length * ts_embed_dim
+                encoder_out: representation of each TCN layer, shape of Batchsize * Length * tcnblockdim
+                REC_list: reconstruct x, shape of Batchsize * Length * x_dim
+                Z_list: output representation of each TCN layer, shape of Batchsize * Length * tcnblockdim, == encoder_out
+                P_list: projected representation of each TCN layer, shape of Batchsize * Length * tcnblockdim,
+                
+                """
                 # compute recloss
                 rec_loss = self.lossf.forward_reconstructloss_kurtosis(x_raw, REC_list, type="last", kurtosis=False)
 
                 """RUN"""
-                # contrast_loss = self.lossf.forward_simsiam_point(Z_list, P_list)
                 contrast_loss = self.lossf.forward_simsiam_extend(Z_list, P_list)
                 # compute contrastive loss
                 # z1, z2, p1, p2 = Z_list[0], Z_list[-1], P_list[0].detach(), P_list[-1].detach()
@@ -140,9 +137,9 @@ class Runner(BaseRunner):
                 batch_loss = rec_loss + contrast_loss
                 batch_loss.backward()
                 # batch_loss.backward(retain_graph=True)
-                self.optimizer.step()
-                addloss = rec_loss - contrast_loss
-                addloss.backward()
+                # self.optimizer.step()
+                # addloss = rec_loss - contrast_loss
+                # addloss.backward()
                 self.optimizer.step()
 
                 epo_sumloss += batch_loss.item()
