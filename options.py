@@ -51,8 +51,8 @@ class Options(object):
         self.parser.add_argument('--temperature', type=float, default=0.07, help='Logits are divided by temperature before calculating the cross entropy')
 
         # train&eval
-        self.parser.add_argument('--trainstride', type=int, default=50, help='for reduceing training samples')
-        self.parser.add_argument("-epo", '--epoch', type=int, default=10, help='max iteration for training')
+        # self.parser.add_argument('--trainstride', type=int, default=50, help='for reduceing training samples')
+        self.parser.add_argument("-epo", '--epoch', type=int, default=20, help='max iteration for training')
         self.parser.add_argument('--lr', type=float, default=1e-3, help='learning rate')
         self.parser.add_argument('--use_gpu', type=bool, default=True, help='whether use gpu')
         self.parser.add_argument('-thre', '--threshold', type=float, default=0.5, help='threshold for determine anomaly points in threshold-based methods')
