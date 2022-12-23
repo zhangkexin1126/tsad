@@ -176,14 +176,14 @@ class Runner(BaseRunner):
         self.show_results(gtnp, adjusted_pred)
         print("Best Threshold:", opt_thre)
         ## save
-        np.save("save/results/anomalyscore-{}.npy".format(args.dataname), anomalyscore.cpu().numpy())
-        np.save("save/results/anomalyscore-rec-{}.npy".format(args.dataname), rec_scores.cpu().numpy())
-        np.save("save/results/anomalyscore-sim-{}.npy".format(args.dataname), sim_scores.cpu().numpy())
-        np.save("save/results/gt-{}.npy".format(args.dataname), gtnp)
-        np.save("save/results/pred-{}.npy".format(args.dataname), adjusted_pred)
-        np.save("save/results/threshold-{}.npy".format(args.dataname), opt_thre)
-        recdata = torch.cat(rec_data, dim=0)
-        np.save("save/results/recdata-{}.npy".format(args.dataname), recdata.cpu().numpy())
+        # np.save("save/results/anomalyscore-{}.npy".format(args.dataname), anomalyscore.cpu().numpy())
+        # np.save("save/results/anomalyscore-rec-{}.npy".format(args.dataname), rec_scores.cpu().numpy())
+        # np.save("save/results/anomalyscore-sim-{}.npy".format(args.dataname), sim_scores.cpu().numpy())
+        # np.save("save/results/gt-{}.npy".format(args.dataname), gtnp)
+        # np.save("save/results/pred-{}.npy".format(args.dataname), adjusted_pred)
+        # np.save("save/results/threshold-{}.npy".format(args.dataname), opt_thre)
+        # recdata = torch.cat(rec_data, dim=0)
+        # np.save("save/results/recdata-{}.npy".format(args.dataname), recdata.cpu().numpy())
 
     def evaluate_simrec_window(self, trained_model, testdl, args):
         def compute_rec_score_win(raw_x, rec_list, type="last", kurtosis=False):
