@@ -24,4 +24,4 @@
 
 例如运行SMD数据集，选择TCN编码器，训练Epoch设置为10，运行如下代码
 
-`python -m main -d SMD `
+`python -m main -d SMD -encoder_select tcn --epoch 10`
